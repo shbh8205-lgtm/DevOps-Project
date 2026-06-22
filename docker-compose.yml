@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # 1. שירות מסד הנתונים
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: postgres_game_db
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: gamedb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # קריטי: הגדרת בדיקת תקינות כדי לדעת מתי ה-DB באמת מוכן לקבל חיבורים
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d gamedb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. שירות האפליקציה
+  app_service:
+    build: .
+    container_name: node_game_app
+    environment:
+      # מחרוזת החבירה של Prisma המפנה לשם השירות "postgres_db" במקום ל-localhost
+      DATABASE_URL: "postgresql://myuser:mypassword@postgres_db:5432/gamedb?schema=public"
+    # דרישה קריטית: האפליקציה תמתין עד שה-DB יהיה בריא לחלוטין (Healthy)
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    # רצף הפקודות להרצה אוטומטית בעת docker-compose up
+    # 1. מריץ מיגרציות (ומחולל קוד לביטחון), 2. מריץ את הקובץ הראשי באמצעות ts-node (או node אם קומפל)
+    command: >
+      sh -c "npx prisma migrate deploy && npx ts-node src/main.ts"
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
