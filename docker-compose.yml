@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # 1. שירות מסד הנתונים
   postgres_db:

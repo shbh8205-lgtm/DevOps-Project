@@ -1,22 +1,15 @@
-# השתמש בגרסה יציבה ועדכנית של Node.js
 FROM node:20-alpine
 
-# הגדרת תיקיית העבודה בתוך הקונטיינר
 WORKDIR /app
 
-# העתקת קבצי הגדרות החבילות
 COPY package*.json ./
 
-# התקנת כל התלויות (כולל Prisma)
-RUN npm install
+# התקנת תלויות תוך עקיפת ה-SSL ישירות בפקודה
+RUN npm install --strict-ssl=false
 
-# העתקת תיקיית הגדרות הסכמה של Prisma
 COPY prisma ./prisma/
 
-# יצירת ה-Prisma Client באופן מקומי בתוך ה-Image
-RUN npx prisma generate
+# פתרון חסין-אש: העברת משתנה הסביבה ישירות בשורת הפקודה (Inline)
+RUN NODE_TLS_REJECT_UNAUTHORIZED=0 npx prisma generate
 
-# העתקת שאר קוד המקור של האפליקציה (כולל תיקיית src)
 COPY . .
-
-# שלב ההרצה ינוהל דרך ה-docker-compose באמצעות פקודה ייעודית
