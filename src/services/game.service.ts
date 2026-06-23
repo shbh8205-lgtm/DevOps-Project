@@ -1,9 +1,8 @@
-import { PrismaClient, GameStatus, ParticipantRole } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { GameStatus, ParticipantRole } from '@prisma/client';
+import { prisma } from '../prisma.js';
 
 export class GameService {
-  
+
   /**
    * צירוף משתמש למשחק קיים
    * @param userId מזהה המשתמש

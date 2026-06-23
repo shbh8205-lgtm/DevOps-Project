@@ -4,8 +4,7 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -29,9 +28,9 @@ enum ParticipantRole {
 
 // 1. מודל משתמש במערכת (User)
 model User {
-  id       Int      @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   username String
-  email    String   @unique
+  email    String @unique
 
   // קשר One-to-Many למודל ההשתתפות
   participations GameParticipant[]
@@ -49,17 +48,17 @@ model Game {
 
 // 3. טבלת קשר מפורשת (GameParticipant) - מנהלת את ה-Many-to-Many
 model GameParticipant {
-  id      Int             @id @default(autoincrement())
-  score   Int             @default(0) // ערך ברירת מחדל של ניקוד
-  role    ParticipantRole
+  id    Int             @id @default(autoincrement())
+  score Int             @default(0) // ערך ברירת מחדל של ניקוד
+  role  ParticipantRole
 
   // מפתחות זרים (Foreign Keys)
-  userId  Int
-  gameId  Int
+  userId Int
+  gameId Int
 
   // הגדרת הקשרים חזרה למודלים הראשיים
-  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  game    Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   // אילוץ ייחודיות: משתמש לא יכול להופיע פעמיים באותו משחק
   @@unique([userId, gameId])

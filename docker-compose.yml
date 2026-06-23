@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: gamedb
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     # קריטי: הגדרת בדיקת תקינות כדי לדעת מתי ה-DB באמת מוכן לקבל חיבורים
@@ -30,9 +30,9 @@ services:
       postgres_db:
         condition: service_healthy
     # רצף הפקודות להרצה אוטומטית בעת docker-compose up
-    # 1. מריץ מיגרציות (ומחולל קוד לביטחון), 2. מריץ את הקובץ הראשי באמצעות ts-node (או node אם קומפל)
+    # 1. מריץ מיגרציות, 2. מריץ את המודול המהודר מתוך dist
     command: >
-      sh -c "npx prisma migrate deploy && npx ts-node src/main.ts"
+      sh -c "npx prisma db push && node dist/main.js"
     ports:
       - "3000:3000"
 

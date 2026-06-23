@@ -1,7 +1,7 @@
-import { PrismaClient, GameStatus } from '@prisma/client';
-import { GameService } from './services/game.service';
+import { GameService } from './services/game.service.js';
+import { prisma } from './prisma.js';
+import { GameStatus } from '@prisma/client';
 
-const prisma = new PrismaClient();
 const gameService = new GameService();
 
 async function main() {
@@ -11,7 +11,7 @@ async function main() {
   console.log('✅ Connected successfully.');
 
   console.log('\n🔄 2. Creating dummy data (User and Game)...');
-  
+
   // יצירת משתמש דמי עם אימייל רנדומלי קטן כדי למנוע שגיאות כפל בהרצות חוזרות
   const randomId = Math.floor(Math.random() * 10000);
   const dummyUser = await prisma.user.create({
@@ -32,15 +32,15 @@ async function main() {
   console.log(`🎮 Dummy Game created: "${dummyGame.title}" (ID: ${dummyGame.id})`);
 
   console.log('\n🔄 3. Calling joinGame function...');
-  
+
   // 4. ניסיון צירוף המשתמש למשחק וטיפול בשגיאות
   try {
     const result = await gameService.joinGame(dummyUser.id, dummyGame.id);
-    
+
     // הדפסת הודעת הצלחה
     console.log('\n🚀 Success: User joined game!');
     console.log('Details:', result);
-    
+
   } catch (error: any) {
     // הדפסת השגיאה במידה והפעולה נכשלה
     console.error('\n❌ Operation failed!');

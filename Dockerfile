@@ -13,3 +13,4 @@ COPY prisma ./prisma/
 RUN NODE_TLS_REJECT_UNAUTHORIZED=0 npx prisma generate
 
 COPY . .
+RUN npm run build
